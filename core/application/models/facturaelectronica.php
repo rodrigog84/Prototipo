@@ -61,7 +61,7 @@ class Facturaelectronica extends CI_Model
 	public function ruta_certificado(){
 		$base_path = __DIR__;
 		$base_path = str_replace("\\", "/", $base_path);
-		$path = $base_path . "/../../facturacion_electronica/certificado/certificado.p12";		
+		$path = $base_path . "/../../facturacion_electronica/certificado/certificado.pfx";		
 		return $path;
 	}
 

@@ -250,9 +250,9 @@ class Facturaglosa extends CI_Controller {
 				fwrite($f_archivo,$xml_dte);
 				fclose($f_archivo);
 
-			    if($tipo_envio == 'automatico'){
+			   /* if($tipo_envio == 'automatico'){
 				    $track_id = $EnvioDTE->enviar();
-			    }
+			    }*/
 
 
 
@@ -265,9 +265,10 @@ class Facturaglosa extends CI_Controller {
 																						  'archivo_dte' => $nombre_dte,
 																						  'trackid' => $track_id
 																						  )); 
-				if($track_id != 0 && $datos_empresa_factura->e_mail != ''){ //existe track id, se envía correo
+
+				/*if($track_id != 0 && $datos_empresa_factura->e_mail != ''){ //existe track id, se envía correo
 					$this->facturaelectronica->envio_mail_dte($idfactura);
-				}
+				}*/
 
 
 

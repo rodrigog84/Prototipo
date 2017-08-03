@@ -320,3 +320,45 @@ CREATE TABLE `guarda_csv` (
 COLLATE='latin1_swedish_ci'
 ENGINE=InnoDB
 ;
+
+
+/*****************************************************/
+
+ALTER TABLE `factura_clientes`
+	ADD COLUMN `path_dte` VARCHAR(50) NULL AFTER `forma`,
+	ADD COLUMN `archivo_dte` VARCHAR(50) NULL AFTER `path_dte`;
+
+ALTER TABLE `factura_clientes`
+	ADD COLUMN `dte` TEXT NULL DEFAULT NULL AFTER `archivo_dte`;	
+
+INSERT INTO `clientes` (`id`, `rut`, `nombres`, `direccion`, `id_giro`, `fono`, `id_rubro`, `e_mail`, `id_sector`, `id_comuna`, `id_ciudad`, `descuento`, `fecha_incripcion`, `fecha_ult_actualiz`, `estado`, `id_vendedor`, `id_pago`, `cupo_disponible`, `imp_adicional`, `tipo`, `nombre_contacto`, `fono_contacto`, `e_mail_contacto`) VALUES (1, '903800003', 'S.A. FERIA DE LOS AGRICULTORES', 'AV LAS RASTRAS N.948', 173, '712241128', 0, 'safa#agricultorestalca.cl', 0, 314, 314, 0, '2016-01-19', '2016-01-19', 1, 1, 1, 0, 1, 3, '', '', '');
+INSERT INTO `clientes` (`id`, `rut`, `nombres`, `direccion`, `id_giro`, `fono`, `id_rubro`, `e_mail`, `id_sector`, `id_comuna`, `id_ciudad`, `descuento`, `fecha_incripcion`, `fecha_ult_actualiz`, `estado`, `id_vendedor`, `id_pago`, `cupo_disponible`, `imp_adicional`, `tipo`, `nombre_contacto`, `fono_contacto`, `e_mail_contacto`) VALUES (2, '894356006', 'CORDERO S.A.', 'ANTOFAGASTA NO.3065', 444, '022', 0, 'S@M.CL', 0, 89, 308, 0, '2016-01-19', '2016-01-19', 1, 1, 1, 5000000, 0, 3, '', '', '');
+INSERT INTO `clientes` (`id`, `rut`, `nombres`, `direccion`, `id_giro`, `fono`, `id_rubro`, `e_mail`, `id_sector`, `id_comuna`, `id_ciudad`, `descuento`, `fecha_incripcion`, `fecha_ult_actualiz`, `estado`, `id_vendedor`, `id_pago`, `cupo_disponible`, `imp_adicional`, `tipo`, `nombre_contacto`, `fono_contacto`, `e_mail_contacto`) VALUES (3, '785494504', 'GOTRU ALIMENTOS SPA', '8 ORIENTE', 115, '0712', 0, 'PEDRO@GOTRU.CL', 0, 314, 314, 0, '2016-01-19', '2016-01-19', 1, 1, 1, 8000000, 0, 1, '', '', '');
+INSERT INTO `clientes` (`id`, `rut`, `nombres`, `direccion`, `id_giro`, `fono`, `id_rubro`, `e_mail`, `id_sector`, `id_comuna`, `id_ciudad`, `descuento`, `fecha_incripcion`, `fecha_ult_actualiz`, `estado`, `id_vendedor`, `id_pago`, `cupo_disponible`, `imp_adicional`, `tipo`, `nombre_contacto`, `fono_contacto`, `e_mail_contacto`) VALUES (4, '760193534', 'SOCIEDAD COMERCIAL DEIK Y COMP', '8 ORIENTE NO.1378', 430, '071242121', 0, 'DEIKK@GMAIL.COM', 0, 314, 314, 0, '2016-01-26', '2016-01-26', 1, 1, 1, 4000000, 0, 3, '', '', '');
+INSERT INTO `clientes` (`id`, `rut`, `nombres`, `direccion`, `id_giro`, `fono`, `id_rubro`, `e_mail`, `id_sector`, `id_comuna`, `id_ciudad`, `descuento`, `fecha_incripcion`, `fecha_ult_actualiz`, `estado`, `id_vendedor`, `id_pago`, `cupo_disponible`, `imp_adicional`, `tipo`, `nombre_contacto`, `fono_contacto`, `e_mail_contacto`) VALUES (5, '777336703', 'SOC. COMERCIAL EL SEMBRADOR LT', 'DELICIAS NORTE 531', 411, '', 0, '', 0, 204, 204, 0, '2016-03-01', '2016-03-01', 1, 1, 1, 0, 0, 1, '', '', '');
+INSERT INTO `clientes` (`id`, `rut`, `nombres`, `direccion`, `id_giro`, `fono`, `id_rubro`, `e_mail`, `id_sector`, `id_comuna`, `id_ciudad`, `descuento`, `fecha_incripcion`, `fecha_ult_actualiz`, `estado`, `id_vendedor`, `id_pago`, `cupo_disponible`, `imp_adicional`, `tipo`, `nombre_contacto`, `fono_contacto`, `e_mail_contacto`) VALUES (6, '795219803', 'CARLOS VALENZUELA Y CIA LIMITA', 'HUAMACHUCO #713', 340, '712621295', 0, '', 0, 282, 282, 0, '2016-03-22', '2016-03-22', 1, 1, 1, 0, 0, 1, '', '', '');
+INSERT INTO `clientes` (`id`, `rut`, `nombres`, `direccion`, `id_giro`, `fono`, `id_rubro`, `e_mail`, `id_sector`, `id_comuna`, `id_ciudad`, `descuento`, `fecha_incripcion`, `fecha_ult_actualiz`, `estado`, `id_vendedor`, `id_pago`, `cupo_disponible`, `imp_adicional`, `tipo`, `nombre_contacto`, `fono_contacto`, `e_mail_contacto`) VALUES (7, '965163204', 'AGRICOLA Y COMERCIAL LIRCAY SPA', 'AVDA SAN MIGUEL CRUC E LAS RASTRAS S/N', 114, '', 0, '', 0, 314, 314, 0, '2016-09-01', '2016-12-16', 1, 1, 1, 0, 0, 3, '', '', '');
+
+
+INSERT INTO `productos` (`id`, `codigo`, `nombre`, `id_marca`, `id_ubi_prod`, `id_uni_medida`, `id_bodega`, `p_ult_compra`, `p_may_compra`, `p_promedio`, `p_costo`, `p_venta`, `stock`, `id_familia`, `id_agrupacion`, `id_subfamilia`, `foto`) VALUES (1, '1001011001', 'TUBO PVC HID.20mmC16 TIGR                    ', 1, 1, 1, 1, 887.00, 999.00, 809.00, 731.00, 1590.00, 44337.12, 1, 1, 1, '');
+INSERT INTO `productos` (`id`, `codigo`, `nombre`, `id_marca`, `id_ubi_prod`, `id_uni_medida`, `id_bodega`, `p_ult_compra`, `p_may_compra`, `p_promedio`, `p_costo`, `p_venta`, `stock`, `id_familia`, `id_agrupacion`, `id_subfamilia`, `foto`) VALUES (2, '1001011002', 'TUBO PVC HID.63mmC16 TIGR                    ', 1, 1, 1, 1, 10751.00, 10751.00, 3233.00, 3233.00, 14920.00, 10560.81, 1, 1, 1, '');
+INSERT INTO `productos` (`id`, `codigo`, `nombre`, `id_marca`, `id_ubi_prod`, `id_uni_medida`, `id_bodega`, `p_ult_compra`, `p_may_compra`, `p_promedio`, `p_costo`, `p_venta`, `stock`, `id_familia`, `id_agrupacion`, `id_subfamilia`, `foto`) VALUES (3, '1001011003', 'TUBO PVC HID.75mmC16 TIGR                    ', 1, 1, 1, 1, 15198.00, 15198.00, 1415.00, 1415.00, 21100.00, 43593.17, 1, 1, 1, '');
+INSERT INTO `productos` (`id`, `codigo`, `nombre`, `id_marca`, `id_ubi_prod`, `id_uni_medida`, `id_bodega`, `p_ult_compra`, `p_may_compra`, `p_promedio`, `p_costo`, `p_venta`, `stock`, `id_familia`, `id_agrupacion`, `id_subfamilia`, `foto`) VALUES (4, '1001011004', 'TUBO PVC HID.90mmC16 TIGR                    ', 1, 1, 1, 1, 0.00, 0.00, 15040.00, 15040.00, 30290.00, 64856.30, 1, 1, 1, '');
+INSERT INTO `productos` (`id`, `codigo`, `nombre`, `id_marca`, `id_ubi_prod`, `id_uni_medida`, `id_bodega`, `p_ult_compra`, `p_may_compra`, `p_promedio`, `p_costo`, `p_venta`, `stock`, `id_familia`, `id_agrupacion`, `id_subfamilia`, `foto`) VALUES (5, '1001011005', 'TUBO PVC HID.110mmC16 TIG                    ', 1, 1, 1, 1, 0.00, 0.00, 22513.00, 22513.00, 45340.00, 79099.72, 1, 1, 1, '');
+INSERT INTO `productos` (`id`, `codigo`, `nombre`, `id_marca`, `id_ubi_prod`, `id_uni_medida`, `id_bodega`, `p_ult_compra`, `p_may_compra`, `p_promedio`, `p_costo`, `p_venta`, `stock`, `id_familia`, `id_agrupacion`, `id_subfamilia`, `foto`) VALUES (6, '1001011006', 'TUBO PVC HID.125mmC16 TIG                    ', 1, 1, 1, 1, 0.00, 0.00, 28848.00, 28848.00, 58100.00, 69835.28, 1, 1, 1, '');
+INSERT INTO `productos` (`id`, `codigo`, `nombre`, `id_marca`, `id_ubi_prod`, `id_uni_medida`, `id_bodega`, `p_ult_compra`, `p_may_compra`, `p_promedio`, `p_costo`, `p_venta`, `stock`, `id_familia`, `id_agrupacion`, `id_subfamilia`, `foto`) VALUES (7, '1001011007', 'TUBO PVC HID.140mmC16 TIG                    ', 1, 1, 1, 1, 0.00, 0.00, 36265.00, 36265.00, 73100.00, 84716.86, 1, 1, 1, '');
+
+CREATE TABLE `vendedores` (
+	`id` INT(11) NOT NULL AUTO_INCREMENT,
+	`nombre` VARCHAR(30) NOT NULL,
+	`direccion` VARCHAR(50) NOT NULL,
+	`fono` VARCHAR(10) NOT NULL,
+	`rut` VARCHAR(11) NOT NULL,
+	`comision` TINYINT(5) NOT NULL,
+	`estado` TINYINT(2) NOT NULL,
+	PRIMARY KEY (`id`)
+)
+COLLATE='latin1_swedish_ci'
+ENGINE=InnoDB
+AUTO_INCREMENT=2
+;

@@ -1338,6 +1338,7 @@ public function cargacontribuyentes(){
 				$rut_parametro = $parametro->valor;
 
 				$rut_caf = $xml->CAF->DA->RE; 
+
 				if($rut_parametro != $rut_caf){
 					$error = true;
 					$message = "CAF cargado no corresponde a empresa registrada.  Verifique archivo y cargue nuevamente";
@@ -1451,15 +1452,35 @@ public function cargacontribuyentes(){
 			if(count($folios_caf) > 0){
 				$nuevo_folio = $folios_caf->folio;
 				$id_folio = $folios_caf->id;
+			}else{
+				$this->db->where('tipo_caf', $tipo_doc);
+				$this->db->update('folios_caf f inner join caf c on f.idcaf = c.id',array(
+												'estado' => 'P',
+												'updated_at' => date('Y-m-d H:i:s'))); 
+
+				$this->db->select('fc.id, fc.folio ')
+				  ->from('folios_caf fc')
+				  ->join('caf c','fc.idcaf = c.id')
+				  ->where('c.tipo_caf',$tipo_caf)
+				  ->where('fc.estado','P')
+				  ->order_by('fc.folio')
+				  ->limit(1);
+				$query = $this->db->get();
+				$folios_caf = $query->row();	
+				if(count($folios_caf) > 0){
+					$nuevo_folio = $folios_caf->folio;
+					$id_folio = $folios_caf->id;
+				}
+
 			}
+
 		}
 
-
 		if($nuevo_folio != 0){
-			$this->db->where('id', $id_folio);
-			$this->db->update('folios_caf',array(
-											'estado' => 'T',
-											'updated_at' => date('Y-m-d H:i:s'))); 
+				$this->db->where('id', $id_folio);
+				$this->db->update('folios_caf',array(
+												'estado' => 'T',
+												'updated_at' => date('Y-m-d H:i:s'))); 
 		}
 
        	$resp['folio'] = $nuevo_folio;
@@ -2278,24 +2299,26 @@ public function cargacontribuyentes(){
 					$this->db->insert('existencia', $datos3);
 		    	 	}
 				}else{
-					if ($producto==($row->id_producto)){
-					    $datos3 = array(
-						'stock' => $saldo,
-				        'fecha_ultimo_movimiento' => $fechafactura
-						);
+					if(isset($row->id_producto)){
+						if ($producto==($row->id_producto)){
+						    $datos3 = array(
+							'stock' => $saldo,
+					        'fecha_ultimo_movimiento' => $fechafactura
+							);
 
-						$this->db->where('id_producto', $producto);
+							$this->db->where('id_producto', $producto);
 
-			    	    $this->db->update('existencia', $datos3);
-		    	    }else{
+				    	    $this->db->update('existencia', $datos3);
+			    	    }else{
 
-		    	    	$datos3 = array(
-						'id_producto' => $producto,
-				        'stock' =>  $saldo,
-				        'fecha_ultimo_movimiento' =>$fechafactura
-					
-						);
-						$this->db->insert('existencia', $datos3);
+			    	    	$datos3 = array(
+							'id_producto' => $producto,
+					        'stock' =>  $saldo,
+					        'fecha_ultimo_movimiento' =>$fechafactura
+						
+							);
+							$this->db->insert('existencia', $datos3);
+				    	}
 			    	}
 		}
 
@@ -2497,9 +2520,9 @@ public function cargacontribuyentes(){
 				fwrite($f_archivo,$xml_dte);
 				fclose($f_archivo);
 
-			    if($tipo_envio == 'automatico'){
+			    /*if($tipo_envio == 'automatico'){
 				    $track_id = $EnvioDTE->enviar();
-			    }
+			    }*/
 
 
 			    $this->db->where('f.folio', $numfactura);
@@ -2512,9 +2535,11 @@ public function cargacontribuyentes(){
 																						  'trackid' => $track_id
 																						  )); 
 
-				if($track_id != 0 && $datos_empresa_factura->e_mail != ''){ //existe track id, se envía correo
+
+
+				/*if($track_id != 0 && $datos_empresa_factura->e_mail != ''){ //existe track id, se envía correo
 					$this->facturaelectronica->envio_mail_dte($idfactura);
-				}
+				}*/
 
 			}
 
