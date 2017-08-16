@@ -438,6 +438,54 @@ class Facturaelectronica extends CI_Model
 	 }
 
 
+	 public function dte_compra($dte){
+	 	echo $dte['filename']."<br>";
+	 	$this->db->select('filename')
+	 			->from('lectura_dte_email')
+	 			->where('filename',$dte['filename']);
+
+		$query = $this->db->get();
+		if(count($query->result()) == 0){
+
+			$config = $this->genera_config();
+			include_once $this->ruta_libredte();	
+			$EnvioDte = new \sasco\LibreDTE\Sii\EnvioDte();
+			$EnvioDte->loadXML($dte['content']);
+
+			$empresa = $this->facturaelectronica->get_empresa();
+
+			$receptor_factura = $EnvioDte->getReceptor();
+			$array_receptor_factura = explode("-",$receptor_factura);
+
+			if($empresa->rut == $array_receptor_factura[0]){ // validamos que sea una factura de la empresa
+
+				$rut_emisor = $EnvioDte->getEmisor();
+				$array_rut_emisor = explode("-",$rut_emisor);
+
+				$array_insert = array('filename' => $dte['filename'],
+									  'content' => $dte['content'],
+									  'rutemisor' => $array_rut_emisor[0],
+									  'dvemisor' => $array_rut_emisor[1],
+									  'fecemision' => $EnvioDte->getFechaEmisionFinal()
+									  );
+
+				$this->db->insert('lectura_dte_email',$array_insert);
+
+
+				$path = date('Ym').'/'; // ruta guardado
+				if(!file_exists('./facturacion_electronica/dte_provee_tmp/')){
+					mkdir('./facturacion_electronica/dte_provee_tmp/',0777,true);
+				}				
+				$f_archivo = fopen('./facturacion_electronica/dte_provee_tmp/'.$dte['filename'],'w');
+				fwrite($f_archivo,$dte['content']);
+				fclose($f_archivo);	
+
+			}
+
+		
+		}  
+
+	 }
 
 	public function envio_mail_dte($idfactura){
 

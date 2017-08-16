@@ -362,3 +362,47 @@ COLLATE='latin1_swedish_ci'
 ENGINE=InnoDB
 AUTO_INCREMENT=2
 ;
+
+
+/**************************************************************************/
+
+CREATE TABLE `lectura_dte_email` (
+	`id` INT(11) NOT NULL AUTO_INCREMENT,
+	`filename` VARCHAR(150) NULL DEFAULT NULL,
+	`content` TEXT NULL,
+	`rutemisor` INT(11) NULL DEFAULT NULL,
+	`dvemisor` CHAR(1) NULL DEFAULT NULL,
+	`fecemision` DATE NULL DEFAULT NULL,
+	`procesado` ENUM('Y','N') NULL DEFAULT 'N',
+	`created_at` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
+	PRIMARY KEY (`id`)
+)
+COLLATE='latin1_swedish_ci'
+ENGINE=MyISAM
+;
+
+
+
+CREATE TABLE `email_fe` (
+	`id` INT(11) NOT NULL AUTO_INCREMENT,
+	`email_contacto` VARCHAR(50) NOT NULL DEFAULT '0',
+	`pass_contacto` VARCHAR(50) NOT NULL DEFAULT '0',
+	`tserver_contacto` ENUM('smtp','imap') NOT NULL,
+	`port_contacto` INT(11) NOT NULL DEFAULT '0',
+	`host_contacto` VARCHAR(250) NOT NULL DEFAULT '0',
+	`email_intercambio` VARCHAR(50) NOT NULL DEFAULT '0',
+	`pass_intercambio` VARCHAR(50) NOT NULL DEFAULT '0',
+	`tserver_intercambio` ENUM('smtp','imap') NOT NULL,
+	`port_intercambio` INT(11) NOT NULL DEFAULT '0',
+	`host_intercambio` VARCHAR(250) NOT NULL DEFAULT '0',
+	`created_at` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
+	`updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+	PRIMARY KEY (`id`)
+)
+COLLATE='latin1_swedish_ci'
+ENGINE=InnoDB
+ROW_FORMAT=DYNAMIC
+;
+
+
+INSERT INTO `email_fe` (`id`, `email_contacto`, `pass_contacto`, `tserver_contacto`, `port_contacto`, `host_contacto`, `email_intercambio`, `pass_intercambio`, `tserver_intercambio`, `port_intercambio`, `host_intercambio`, `created_at`, `updated_at`) VALUES (1, 'contactodeik@gmail.com', 'deikk1965', 'smtp', 465, 'ssl://smtp.gmail.com', 'contactodeik@gmail.com', 'deikk1965', 'smtp', 465, 'ssl://smtp.gmail.com', '2016-07-12 15:11:20', '2016-07-12 15:40:38');
