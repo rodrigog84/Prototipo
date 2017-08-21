@@ -438,6 +438,32 @@ class Facturaelectronica extends CI_Model
 	 }
 
 
+
+	public function reporte_provee($start,$limit){
+
+		$data_provee = $this->db->select('count(l.id) as cantidad ')
+		  ->from('lectura_dte_email l');
+		
+		$query = $this->db->get();   
+
+        $result_cantidad = $query->row()->cantidad; 
+
+
+
+		$data_provee = $this->db->select("l.id, c.razon_social, concat(l.rutemisor,'-',l.dvemisor) rutemisor, c.mail, l.fecemision, l.fecenvio, l.created_at",false)
+		  ->from('lectura_dte_email l')
+		  ->join('contribuyentes_autorizados_1 c','l.rutemisor = c.rut','left');
+
+		$data_provee = !$limit ? $data_provee : $data_provee->limit($limit,$start);
+
+		$query = $this->db->get();
+		//echo $this->db->last_query();
+		$result = $query->result();
+		//var_dump($result); exit;
+		 return array('cantidad' => $result_cantidad,'data' => $result);
+	}
+
+
 	 public function dte_compra($dte){
 	 	echo $dte['filename']."<br>";
 	 	$this->db->select('filename')
@@ -457,10 +483,16 @@ class Facturaelectronica extends CI_Model
 			$receptor_factura = $EnvioDte->getReceptor();
 			$array_receptor_factura = explode("-",$receptor_factura);
 
+			$documentos = $EnvioDte->getDocumentos();
+			$documento = $documentos[0];
+			//print_r($documento->getResumen()); exit;
+
 			if($empresa->rut == $array_receptor_factura[0]){ // validamos que sea una factura de la empresa
 
 				$rut_emisor = $EnvioDte->getEmisor();
 				$array_rut_emisor = explode("-",$rut_emisor);
+
+
 
 				$array_insert = array('filename' => $dte['filename'],
 									  'content' => $dte['content'],

@@ -19,6 +19,40 @@ class Facturas extends CI_Controller {
 
 
 	public function dteproveegetAll(){
+
+
+		#$mes = $this->input->post('mes');
+		#$anno = $this->input->post('anno');
+		$start = $this->input->get('start');
+        $limit = $this->input->get('limit');
+
+        //print_r($this->input->post(NULL,true)); exit;
+
+
+		$this->load->model('facturaelectronica');
+		$datos_stock = $this->facturaelectronica->reporte_provee($start,$limit);
+ 		//var_dump($datos_stock);
+ 		$i = $start + 1;
+		foreach ($datos_stock['data'] as $stock) {
+			$stock->num = $i;
+			$i++;
+		}
+
+	 	$resp['success'] = true;
+	 	$resp['data'] = $datos_stock['data'];
+	 	$resp['total'] = $datos_stock['cantidad'];
+	 	/*$resp['periodo'] = "Detalle Resumen de Ventas Mensuales - " .month2string((int)$mes)." de " . $anno;
+	 	$resp['mes'] = $mes;
+	 	$resp['anno'] = $anno;*/
+        echo json_encode($resp);
+	 	
+	 	 
+		
+
+	}	
+
+
+	/*public function dteproveegetAll(){
 		$this->db->select('d.id, p.nombres as proveedor, p.e_mail, d.path_dte, d.arch_rec_dte, d.arch_res_dte, d.arch_env_rec, date_format(d.fecha_documento,"%d/%m/%Y") as fecha_documento , date_format(d.created_at,"%d/%m/%Y") as fecha_creacion ',false)
 		  ->from('dte_proveedores d')
 		  ->join('proveedores p','d.idproveedor = p.id')
@@ -28,7 +62,7 @@ class Facturas extends CI_Controller {
 		echo json_encode($dte_provee);
 		
 
-	}
+	}*/
 
 
 
