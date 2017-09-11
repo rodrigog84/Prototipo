@@ -3,11 +3,15 @@ Ext.define('Infosys_web.view.facturaelectronica.DteProveedorPrincipal' ,{
     alias : 'widget.dteproveeprincipal',
     
     requires: ['Ext.toolbar.Paging'],
-    title : 'Informe Stock',
-    autoHeight: false,
+    title : 'Facturas Proveedores',
+    //autoHeight: false,
     store: 'Cargadteproveedores',
     autoShow: true,
     width: 700,
+    viewConfig: {
+        forceFit: true
+
+    },    
     //height: 200,
     columns: [
                                 { text: 'id',  dataIndex: 'id', hidden: true, flex: 1},
@@ -19,9 +23,9 @@ Ext.define('Infosys_web.view.facturaelectronica.DteProveedorPrincipal' ,{
                                 { text: 'Fecha Env&iacute;o',  dataIndex: 'fecenvio', flex: 1 },
                                 { text: 'Fecha Lectura',  dataIndex: 'created_at', flex: 1},
                                 {
-                                header: "XML Recepcion DTE",
+                                header: "Recepcion DTE",
                                 xtype:'actioncolumn',
-                                width:150,
+                                width:100,
                                 items: [{
                                     icon: 'images/download-icon.png',  // Use a URL in the icon config
                                     tooltip: 'Ver Recepcion DTE',
@@ -29,12 +33,20 @@ Ext.define('Infosys_web.view.facturaelectronica.DteProveedorPrincipal' ,{
                                         var rec = grid.getStore().getAt(rowIndex);
                                         var vista = this.up('dteproveeprincipal');
                                         vista.fireEvent('verxmlprovee',rec,1)
-                                    }
+                                    },
+                                        isDisabled: function(view, rowIndex, colIndex, item, record) {
+                                                            // Returns true if 'editable' is false (, null, or undefined)
+                                            if(record.get('procesado') == 'N'){
+                                             return true;
+                                            }else{
+                                             return false;
+                                            }
+                                        }                                     
                                 }]
                                 },{
-                                        header: "XML Resultado DTE",
+                                        header: "Resultado DTE",
                                         xtype:'actioncolumn',
-                                        width:150,
+                                        width:100,
                                         items: [{
                                             icon: 'images/download-icon.png',  // Use a URL in the icon config
                                             tooltip: 'Ver Resultado DTE',
@@ -42,12 +54,20 @@ Ext.define('Infosys_web.view.facturaelectronica.DteProveedorPrincipal' ,{
                                                 var rec = grid.getStore().getAt(rowIndex);
                                                 var vista = this.up('dteproveeprincipal');
                                                 vista.fireEvent('verxmlprovee',rec,2)
+                                            },
+                                        isDisabled: function(view, rowIndex, colIndex, item, record) {
+                                                            // Returns true if 'editable' is false (, null, or undefined)
+                                            if(record.get('procesado') == 'N'){
+                                             return true;
+                                            }else{
+                                             return false;
                                             }
+                                        }
                                         }]
                                 },{
-                                        header: "XML Envio Recibo",
+                                        header: "Envio Recibo",
                                         xtype:'actioncolumn',
-                                        width:150,
+                                        width:100,
                                         items: [{
                                             icon: 'images/download-icon.png',  // Use a URL in the icon config
                                             tooltip: 'Ver Envio Recibo',
@@ -55,29 +75,28 @@ Ext.define('Infosys_web.view.facturaelectronica.DteProveedorPrincipal' ,{
                                                 var rec = grid.getStore().getAt(rowIndex);
                                                 var vista = this.up('dteproveeprincipal');
                                                 vista.fireEvent('verxmlprovee',rec,3)
+                                            },
+                                        isDisabled: function(view, rowIndex, colIndex, item, record) {
+                                                            // Returns true if 'editable' is false (, null, or undefined)
+                                            if(record.get('procesado') == 'N'){
+                                             return true;
+                                            }else{
+                                             return false;
                                             }
+                                        }
                                         }]
                                 }
                                 ],
     initComponent: function() {
         me = this;
   
-        var stockProductos = Ext.create('Ext.data.Store', {
-            fields: ['id','razon_social','rutemisor', 'mail' , 'fecemision', 'fecenvio' , 'created_at'],
-            pageSize: 7,
-            autoLoad: true,
-            proxy: {
-              type: 'ajax',
-                url : preurl +'facturas/dteproveegetAll',
-                reader: {
-                    type: 'json',
-                    root: 'data'
-                }
-            },
-            autoLoad: true
-        });         
-     
-
+ this.dockedItems = [{
+     xtype: 'pagingtoolbar',
+            dock:'bottom',
+            store: 'Cargadteproveedores',
+            displayInfo: true
+        }];
+        
         
         this.callParent(arguments);
         this.on('render', this.loadStore, this);

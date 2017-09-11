@@ -10,5 +10,6 @@ Ext.define('Infosys_web.model.Cargadteproveedores', {
     	{name: 'fecemision'},
     	{name: 'fecenvio'},
     	{name: 'created_at'},
+        {name: 'procesado'},
     ]
 });

@@ -438,7 +438,6 @@ class Facturaelectronica extends CI_Model
 	 }
 
 
-
 	public function reporte_provee($start,$limit){
 
 		$data_provee = $this->db->select('count(l.id) as cantidad ')
@@ -450,7 +449,7 @@ class Facturaelectronica extends CI_Model
 
 
 
-		$data_provee = $this->db->select("l.id, c.razon_social, concat(l.rutemisor,'-',l.dvemisor) rutemisor, c.mail, l.fecemision, l.fecenvio, l.created_at",false)
+		$data_provee = $this->db->select("l.id, c.razon_social, concat(l.rutemisor,'-',l.dvemisor) rutemisor, c.mail, l.fecemision, l.fecenvio, l.created_at, l.procesado",false)
 		  ->from('lectura_dte_email l')
 		  ->join('contribuyentes_autorizados_1 c','l.rutemisor = c.rut','left');
 

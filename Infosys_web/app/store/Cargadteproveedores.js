@@ -2,13 +2,10 @@ Ext.define('Infosys_web.store.Cargadteproveedores', {
     extend: 'Ext.data.Store',
     model: 'Infosys_web.model.Cargadteproveedores',
     autoLoad: true,
-    pageSize: 14,
+    pageSize: 17,
     
     proxy: {
         type: 'ajax',
-         actionMethods:  {
-            read: 'POST'
-         },
         api: {
             //create: preurl + 'cuentacorriente/save', 
             read: preurl + 'facturas/dteproveegetAll',
