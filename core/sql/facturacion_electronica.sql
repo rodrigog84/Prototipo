@@ -405,4 +405,10 @@ ROW_FORMAT=DYNAMIC
 ;
 
 
-INSERT INTO `email_fe` (`id`, `email_contacto`, `pass_contacto`, `tserver_contacto`, `port_contacto`, `host_contacto`, `email_intercambio`, `pass_intercambio`, `tserver_intercambio`, `port_intercambio`, `host_intercambio`, `created_at`, `updated_at`) VALUES (1, 'contactodeik@gmail.com', 'deikk1965', 'smtp', 465, 'ssl://smtp.gmail.com', 'contactodeik@gmail.com', 'deikk1965', 'smtp', 465, 'ssl://smtp.gmail.com', '2016-07-12 15:11:20', '2016-07-12 15:40:38');
+	INSERT INTO `email_fe` (`id`, `email_contacto`, `pass_contacto`, `tserver_contacto`, `port_contacto`, `host_contacto`, `email_intercambio`, `pass_intercambio`, `tserver_intercambio`, `port_intercambio`, `host_intercambio`, `created_at`, `updated_at`) VALUES (1, 'contactodeik@gmail.com', 'deikk1965', 'smtp', 465, 'ssl://smtp.gmail.com', 'contactodeik@gmail.com', 'deikk1965', 'smtp', 465, 'ssl://smtp.gmail.com', '2016-07-12 15:11:20', '2016-07-12 15:40:38');
+
+
+/*************************************************************************/
+
+ALTER TABLE `lectura_dte_email`
+	ADD COLUMN `path` VARCHAR(50) NULL DEFAULT NULL AFTER `id`;

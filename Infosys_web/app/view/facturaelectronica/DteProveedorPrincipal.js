@@ -23,6 +23,25 @@ Ext.define('Infosys_web.view.facturaelectronica.DteProveedorPrincipal' ,{
                                 { text: 'Fecha Env&iacute;o',  dataIndex: 'fecenvio', flex: 1 },
                                 { text: 'Fecha Lectura',  dataIndex: 'created_at', flex: 1},
                                 {
+                                    header: "Env&iacute;o SII",
+                                    xtype:'actioncolumn',
+                                    width:70,
+                                    align: 'center',
+                                    items: [{
+                                        iconCls: 'icon-upload',  // Use a URL in the icon config
+                                        tooltip: 'Ver Estado Env&iacute;o',
+                                        handler: function(grid, rowIndex, colIndex) {
+                                            var rec = grid.getStore().getAt(rowIndex);
+                                            console.log(rec.data.id);
+                                            //salert("Edit " + rec.get('firstname'));
+                                        //var vista = this.up('dteproveeprincipal');
+                                           // vista.fireEvent('verEstadoDte',rec,3)
+                                            Ext.create('Infosys_web.view.facturaelectronica.verEstadoCompra', {idcompra: rec.data.id});   
+                                        },
+                                    }]     
+                                
+                                    },
+                                {
                                 header: "Recepcion DTE",
                                 xtype:'actioncolumn',
                                 width:100,
@@ -86,6 +105,7 @@ Ext.define('Infosys_web.view.facturaelectronica.DteProveedorPrincipal' ,{
                                         }
                                         }]
                                 }
+
                                 ],
     initComponent: function() {
         me = this;

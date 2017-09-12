@@ -438,6 +438,19 @@ class Facturaelectronica extends CI_Model
 	 }
 
 
+	public function get_provee_by_id($idcompra){
+		$this->db->select('l.id, l.path, l.filename, l.rutemisor, l.dvemisor, l.fecemision, l.procesado, c.razon_social, c.mail, l.fecenvio, l.created_at ',false)
+		  ->from('lectura_dte_email l')
+		  ->join('contribuyentes_autorizados_1 c','l.rutemisor = c.rut','left')
+		  ->where('l.id',$idcompra);
+		$query = $this->db->get();
+		//echo $this->db->last_query(); exit;
+		return $query->row();
+	 }
+
+
+
+
 	public function reporte_provee($start,$limit){
 
 		$data_provee = $this->db->select('count(l.id) as cantidad ')

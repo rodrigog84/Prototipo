@@ -18,6 +18,19 @@ class Facturas extends CI_Controller {
 	}
 
 
+	public function get_provee_by_id($idcompra){
+		$this->load->model('facturaelectronica');
+		$datos_provee = $this->facturaelectronica->get_provee_by_id($idcompra);
+
+		echo json_encode($datos_provee);
+
+
+	}
+
+
+
+
+
 	public function dteproveegetAll(){
 
 
@@ -673,6 +686,18 @@ exit;*/
 	 }
 
 
+	public function ver_dte_provee($idcompra){
+		$this->load->model('facturaelectronica');
+		$dte = $this->facturaelectronica->get_provee_by_id($idcompra);
+		$path_archivo = "./facturacion_electronica/dte_provee_tmp/".$dte->path;
+		$data_archivo = basename($path_archivo.$dte->filename);
+		header('Content-Type: text/plain');
+		header('Content-Disposition: attachment; filename=' . $data_archivo);
+		header('Content-Length: ' . filesize($path_archivo.$dte->filename));
+		readfile($path_archivo.$dte->filename);			
+	 }	 
+
+
 	public function ver_libro($idlibro){
 		$this->load->model('facturaelectronica');
 		$libro = $this->facturaelectronica->get_libro_by_id($idlibro);
@@ -834,6 +859,138 @@ exit;*/
    		echo json_encode($resp);
 	 }	 
 
+
+
+	public function genera_acuse_recibo($idcompra){
+
+		$this->load->model('facturaelectronica');
+		$provee = $this->facturaelectronica->get_provee_by_id($idcompra);
+
+
+        if (!$this->upload->do_upload("dte")) {
+            print_r($this->upload->data()); 
+            print_r($this->upload->display_errors());
+            $error = true;
+            $message = "Error en subir archivo.  Intente nuevamente";
+        }else{
+        	$error = false;
+			$archivo = "./facturacion_electronica/dte_provee_tmp/".$provee->path."/".$provee->filename;
+        	$xml_content = file_get_contents($archivo);
+
+			header('Content-type: text/plain; charset=ISO-8859-1');
+			include $this->facturaelectronica->ruta_libredte();
+
+			//include $this->ruta_libredte();
+			$archivo_recibido = $archivo;
+			$empresa = $this->facturaelectronica->get_empresa();
+			$RutReceptor_esperado = $empresa->rut.'-'.$empresa->dv;
+			$RutEmisor_esperado = $provee->rutemisor."-".$provee->dvemisor;
+
+			$result_recepcion = $this->recepciondte($xml_content,$RutEmisor_esperado,$RutReceptor_esperado,$archivo_recibido);
+
+
+			if(!$result_recepcion){
+				$error = true;
+				$message = "Error en creación de Recepcion DTE.  Verifique formato y cargue nuevamente";
+
+			}else{
+				$xml_recepcion_dte = $result_recepcion;
+
+				if(!$error){
+					$result_resultado = $this->resultadodte($xml_content,$RutEmisor_esperado,$RutReceptor_esperado,$archivo_recibido);
+					if(!$result_resultado){
+						$error = true;
+						$message = "Error en creación de Resultado DTE.  Verifique formato y cargue nuevamente";
+
+					}else{
+						$xml_resultado_dte = $result_resultado;
+
+						if(!$error){
+							$result_envio_recibos = $this->envio_recibosdte($xml_content,$RutEmisor_esperado,$RutReceptor_esperado,$archivo_recibido);
+
+							if(!$result_envio_recibos){
+								$error = true;
+								$message = "Error en creación de Envio de Recibo.  Verifique formato y cargue nuevamente";
+
+							}else{
+								$xml_envio_recibosdte = $result_envio_recibos;
+							}
+
+						}
+
+
+					}
+
+				}
+
+
+			}
+
+
+			// COMENZAR A ALMACENAR
+			if(!$error){
+
+				$nombre_recepcion_dte = "RecepcionDTE_".$idproveedor."_".date("His").".xml"; // nombre archivo
+				$nombre_resultado_dte = "ResultadoDTE_".$idproveedor."_".date("His").".xml"; // nombre archivo
+				$nombre_envio_recibo = "EnvioRecibo_".$idproveedor."_".date("His").".xml"; // nombre archivo
+				$path_acuse = date('Ym').'/'; // ruta guardado
+				if(!file_exists('./facturacion_electronica/acuse_recibo/'.$path_acuse)){
+					mkdir('./facturacion_electronica/acuse_recibo/'.$path_acuse,0777,true);
+				}		
+
+				//archivo recepcion		
+				$f_archivo_recepcion_dte = fopen('./facturacion_electronica/acuse_recibo/'.$path_acuse.$nombre_recepcion_dte,'w');
+				fwrite($f_archivo_recepcion_dte,$xml_recepcion_dte);
+				fclose($f_archivo_recepcion_dte);
+
+
+				//archivo resultado		
+				$f_archivo_resultado_dte = fopen('./facturacion_electronica/acuse_recibo/'.$path_acuse.$nombre_resultado_dte,'w');
+				fwrite($f_archivo_resultado_dte,$xml_resultado_dte);
+				fclose($f_archivo_resultado_dte);
+
+				//archivo envio recibo	
+				$f_archivo_envio_recibo = fopen('./facturacion_electronica/acuse_recibo/'.$path_acuse.$nombre_envio_recibo,'w');
+				fwrite($f_archivo_envio_recibo,$xml_envio_recibosdte);
+				fclose($f_archivo_envio_recibo);
+
+				// Obtiene fecha de emisión de documento
+				$EnvioDte = new \sasco\LibreDTE\Sii\EnvioDte();
+				$EnvioDte->loadXML($xml_content);
+				$Documentos = $EnvioDte->getDocumentos();
+				$Documento = $Documentos[0];
+				$fec_documento = $Documento->getFechaEmision();
+
+				$array_insert = array(
+								'idproveedor' => $idproveedor,
+								'dte' => $xml_content,
+								'path_dte' =>$path_recepcion,
+								'archivo_dte' => $archivo_recibido,
+								'envios_recibos' => $xml_envio_recibosdte,
+								'recepcion_dte' => $xml_recepcion_dte,
+								'resultado_dte' => $xml_resultado_dte,
+								'arch_env_rec' => $nombre_envio_recibo,
+								'arch_rec_dte' => $nombre_recepcion_dte,
+								'arch_res_dte' => $nombre_resultado_dte,
+								'fecha_documento' => $fec_documento,
+								'created_at' => date("Y-m-d H:i:s")
+								);
+
+				$this->db->insert('dte_proveedores',$array_insert); 
+			}
+
+        }
+
+
+		if($error && $carga){
+			unlink($config['upload_path'].$config['file_name'].$data_file_upload['file_ext']);
+		}
+
+
+   		$resp['success'] = true;
+   		$resp['message'] = $error ? $message : "Carga realizada correctamente";
+   		echo json_encode($resp);
+	 }
 
 	 public function recepciondte($xml_content,$RutEmisor_esperado,$RutReceptor_esperado,$archivo_recibido){
 
