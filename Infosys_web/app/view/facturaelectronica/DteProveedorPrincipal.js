@@ -41,7 +41,7 @@ Ext.define('Infosys_web.view.facturaelectronica.DteProveedorPrincipal' ,{
                                     }]     
                                 
                                     },
-                                {
+                                /*{
                                 header: "Recepcion DTE",
                                 xtype:'actioncolumn',
                                 width:100,
@@ -104,7 +104,7 @@ Ext.define('Infosys_web.view.facturaelectronica.DteProveedorPrincipal' ,{
                                             }
                                         }
                                         }]
-                                }
+                                }*/
 
                                 ],
     initComponent: function() {

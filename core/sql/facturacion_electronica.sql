@@ -412,3 +412,14 @@ ROW_FORMAT=DYNAMIC
 
 ALTER TABLE `lectura_dte_email`
 	ADD COLUMN `path` VARCHAR(50) NULL DEFAULT NULL AFTER `id`;
+
+
+/****************************************************************************/
+
+ALTER TABLE `lectura_dte_email`
+	ADD COLUMN `envios_recibos` TEXT NULL DEFAULT NULL AFTER `fecemision`,
+	ADD COLUMN `recepcion_dte` TEXT NULL DEFAULT NULL AFTER `envios_recibos`,
+	ADD COLUMN `resultado_dte` TEXT NULL DEFAULT NULL AFTER `recepcion_dte`,
+	ADD COLUMN `arch_env_rec` VARCHAR(50) NULL DEFAULT NULL AFTER `resultado_dte`,
+	ADD COLUMN `arch_rec_dte` VARCHAR(50) NULL DEFAULT NULL AFTER `arch_env_rec`,
+	ADD COLUMN `arch_res_dte` VARCHAR(50) NULL DEFAULT NULL AFTER `arch_rec_dte`;	

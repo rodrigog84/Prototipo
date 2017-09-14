@@ -7,7 +7,7 @@ Ext.define('Infosys_web.view.facturaelectronica.verEstadoCompra' ,{
 
     autoShow: true,
     width: 800,
-    height: 200,
+    height: 300,
     initComponent: function() {
         me = this;
         var idcompra = me.idcompra;
@@ -27,20 +27,28 @@ Ext.define('Infosys_web.view.facturaelectronica.verEstadoCompra' ,{
         async: false,
         url: preurl + 'facturas/get_provee_by_id/'+idcompra});
         var obj_datos = Ext.decode(response_datos.responseText);
-
+        console.log(obj_datos);
         if(obj_datos.length == 0){
             var razon_social = "";
             var rut_emisor = "";
             var email = "";
             var dte = "";
+            var acuse_enviorecibos = "";
 
         }else{
             var razon_social = obj_datos.razon_social;
             var rut_emisor = obj_datos.rutemisor+'-'+obj_datos.dvemisor;
             var email = obj_datos.mail;
-            var url = preurl + 'facturas/ver_dte_provee/'+idcompra;
+            var url_envio_recibos = preurl + 'facturas/ver_dte_proveedor/3/'+idcompra;
+            var url_recepciondte = preurl + 'facturas/ver_dte_proveedor/1/'+idcompra;
+            var url_resultadodte = preurl + 'facturas/ver_dte_proveedor/2/'+idcompra;
+            var url = preurl + 'facturas/ver_dte_proveedor/'+idcompra;
             var url_image = preurl_js + 'images/xml-icon.png';
             var dte = '<a href="' + url + '" target="_blank"><img src="' + url_image + '" width="16" height="16"></a>';
+            //var acuse_enviorecibos = '<a href="' + url_envio_recibos + '" target="_blank"><img src="' + url_image + '" width="16" height="16"></a>';
+            var acuse_enviorecibos = obj_datos.arch_env_rec == null ? '<a href="#" ><img src="' + url_image + '" width="16" height="16"></a>' : '<a href="' + url_envio_recibos + '" target="_blank"><img src="' + url_image + '" width="16" height="16"></a>';
+            var acuse_recepciondte = obj_datos.arch_rec_dte == null ? '<a href="#" ><img src="' + url_image + '" width="16" height="16"></a>' : '<a href="' + url_recepciondte + '" target="_blank"><img src="' + url_image + '" width="16" height="16"></a>';
+            var acuse_resultadodte = obj_datos.arch_res_dte == null ? '<a href="#" ><img src="' + url_image + '" width="16" height="16"></a>' : '<a href="' + url_resultadodte + '" target="_blank"><img src="' + url_image + '" width="16" height="16"></a>';
 
         }
 
@@ -114,6 +122,33 @@ Ext.define('Infosys_web.view.facturaelectronica.verEstadoCompra' ,{
                         value : dte,
                         labelWidth: 200,
                     
+                    }, {
+                        xtype: 'displayfield',
+                        itemId : 'acuse_enviorecibos',
+                        fieldLabel : 'Acuse Envio Recibos',
+                        labelStyle: ' font-weight:bold',
+                        value : acuse_enviorecibos,
+                        disabled : obj_datos.arch_env_rec == null ? true : false,
+                        labelWidth: 200,
+                    
+                    }, {
+                        xtype: 'displayfield',
+                        itemId : 'acuse_recepciondte',
+                        fieldLabel : 'Acuse Recepci&oacute;n DTE',
+                        labelStyle: ' font-weight:bold',
+                        value : acuse_recepciondte,
+                        disabled :  obj_datos.arch_rec_dte == null ? true : false,
+                        labelWidth: 200,
+                    
+                    }, {
+                        xtype: 'displayfield',
+                        itemId : 'acuse_resultadodte',
+                        fieldLabel : 'Acuse Resultado DTE',
+                        labelStyle: ' font-weight:bold',
+                        value : acuse_resultadodte,
+                        disabled :  obj_datos.arch_res_dte == null ? true : false,
+                        labelWidth: 200,
+                    
                     }, /*{
                         xtype: 'combobox',
                         itemId : 'estado_dte',
@@ -171,7 +206,7 @@ Ext.define('Infosys_web.view.facturaelectronica.verEstadoCompra' ,{
                             iconCls: 'icon-upload',
                             text: 'Generar Acuses de Recibo',
                             itemId : 'genera_acuse',
-                            disabled : false,                            
+                            disabled : obj_datos.procesado == 'Y' ? true : false,                            
                             handler: function() {
                                 var form = this.up('form').getForm();
                                 if(form.isValid()){
@@ -180,15 +215,30 @@ Ext.define('Infosys_web.view.facturaelectronica.verEstadoCompra' ,{
                                         waitMsg: 'Generando...',
                                         success: function(fp, o) {
                                             Ext.Msg.alert('Atención', o.result.message);
-                                            me.down('#trackid').setValue(o.result.trackid);  
+                                            //me.down('#trackid').setValue(o.result.trackid);  
 
                                             //var estado_dte = o.result.trackid != 0 ? "DTE Recibido - Revisi&oacute;n en proceso" : "DTE No Recibido.  Documento No Recibido por el SII";
 
-                                            me.down('#estado_dte').setValue(estado_dte);
+                                            //me.down('#estado_dte').setValue(estado_dte);
 
-                                            if(o.result.trackid != 0){
-                                                me.down('#sent_button').setDisabled(true);    
-                                            }   
+                                            //if(o.result.trackid != 0){
+                                                var acuse_enviorecibos = '<a href="' + url_envio_recibos + '" target="_blank"><img src="' + url_image + '" width="16" height="16"></a>';
+                                                var acuse_recepciondte = '<a href="' + url_recepciondte + '" target="_blank"><img src="' + url_image + '" width="16" height="16"></a>';
+                                                var acuse_resultadodte = '<a href="' + url_resultadodte + '" target="_blank"><img src="' + url_image + '" width="16" height="16"></a>';
+                                                
+                                                me.down('#acuse_enviorecibos').setDisabled(false);    
+                                                me.down('#acuse_enviorecibos').setValue(acuse_enviorecibos);    
+
+                                                me.down('#acuse_recepciondte').setDisabled(false);    
+                                                me.down('#acuse_recepciondte').setValue(acuse_recepciondte);    
+
+                                                me.down('#acuse_resultadodte').setDisabled(false);    
+                                                me.down('#acuse_resultadodte').setValue(acuse_resultadodte);    
+
+
+                                                me.down('#sent_button').setDisabled(false);    
+                                                me.down('#genera_acuse').setDisabled(true);  
+                                            //}   
 
 
                                         },
@@ -203,7 +253,7 @@ Ext.define('Infosys_web.view.facturaelectronica.verEstadoCompra' ,{
                             iconCls: 'icon-upload',
                             text: 'Enviar a SII',
                             itemId : 'sent_button',
-                            disabled : false,                            
+                            disabled : obj_datos.fecenvio == null && obj_datos.procesado == 'Y' ? false : true,                                  
                             handler: function() {
                                 var form = this.up('form').getForm();
                                 if(form.isValid()){
@@ -235,6 +285,7 @@ Ext.define('Infosys_web.view.facturaelectronica.verEstadoCompra' ,{
                         {
                             iconCls: 'icon-save',
                             text: 'Actualizar Identificador Env&iacute;o',
+                            disabled : true,
                             handler: function() {
                                 var form = this.up('form').getForm();
                                 if(form.isValid()){
@@ -254,7 +305,7 @@ Ext.define('Infosys_web.view.facturaelectronica.verEstadoCompra' ,{
                         {
                             iconCls: 'icon-email',
                             text: 'Env&iacute;o DTE email',
-                            disabled : false,  
+                            disabled : true, 
                             handler: function() {
                                 var form = this.up('form').getForm();
                                 if(form.isValid()){
