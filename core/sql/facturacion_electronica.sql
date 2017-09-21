@@ -423,3 +423,15 @@ ALTER TABLE `lectura_dte_email`
 	ADD COLUMN `arch_env_rec` VARCHAR(50) NULL DEFAULT NULL AFTER `resultado_dte`,
 	ADD COLUMN `arch_rec_dte` VARCHAR(50) NULL DEFAULT NULL AFTER `arch_env_rec`,
 	ADD COLUMN `arch_res_dte` VARCHAR(50) NULL DEFAULT NULL AFTER `arch_rec_dte`;	
+
+
+/*******************************************************************************/
+
+
+ALTER TABLE `lectura_dte_email`
+	ADD COLUMN `estado_res_dte` INT NULL DEFAULT NULL AFTER `arch_res_dte`;
+
+ALTER TABLE `lectura_dte_email`
+	ADD COLUMN `trackid_env_rec` VARCHAR(30) NULL DEFAULT NULL AFTER `estado_res_dte`,
+	ADD COLUMN `trackid_rec_dte` VARCHAR(30) NULL DEFAULT NULL AFTER `trackid_env_rec`,
+	ADD COLUMN `trackid_res_dte` VARCHAR(30) NULL DEFAULT NULL AFTER `trackid_rec_dte`;

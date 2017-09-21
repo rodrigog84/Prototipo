@@ -394,6 +394,164 @@ exit;*/
 	}
 
 
+
+	public function envio_sii_acuse($idcompra){
+
+		$this->load->model('facturaelectronica');
+		$provee = $this->facturaelectronica->get_provee_by_id($idcompra);
+
+		$config = $this->facturaelectronica->genera_config();
+
+		include $this->facturaelectronica->ruta_libredte();
+
+
+		$token = \sasco\LibreDTE\Sii\Autenticacion::getToken($config['firma']);
+		if (!$token) {
+		    foreach (\sasco\LibreDTE\Log::readAll() as $error){
+		    	$result['error'] = true;
+
+		    }
+		    $result['message'] = "Error de conexión con SII";		   
+		   	echo json_encode($result);
+		    exit;
+		}
+
+		$Firma = new \sasco\LibreDTE\FirmaElectronica($config['firma']); //lectura de certificado digital
+		$rut = $Firma->getId(); 
+		$rut_consultante = explode("-",$rut);
+		$RutEnvia = $rut_consultante[0]."-".$rut_consultante[1];
+
+
+
+
+	 	$archivo_env_rec = "./facturacion_electronica/" . $provee->path . "/".$provee->arch_env_rec;
+	 	if(file_exists($archivo_env_rec)){
+	 		$xml_env_rec = file_get_contents($archivo_env_rec);
+	 	}else{
+	 		$xml_env_rec = $provee->envios_recibos;
+	 	}
+
+
+	 	$archivo_rec_dte = "./facturacion_electronica/" . $provee->path . "/".$provee->arch_rec_dte;
+	 	if(file_exists($archivo_rec_dte)){
+	 		$xml_rec_dte = file_get_contents($archivo_rec_dte);
+	 	}else{
+	 		$xml_rec_dte = $provee->recepcion_dte;
+	 	}
+
+
+		$archivo_res_dte = "./facturacion_electronica/" . $provee->path . "/".$provee->arch_res_dte;
+	 	if(file_exists($archivo_res_dte)){
+	 		$xml_res_dte = file_get_contents($archivo_res_dte);
+	 	}else{
+	 		$xml_res_dte = $provee->resultado_dte;
+	 	}
+
+
+
+
+		$empresa = $this->facturaelectronica->get_empresa();
+		$RutEmisor = $empresa->rut."-".$empresa->dv; 
+		// enviar DTE
+		$result_envio = \sasco\LibreDTE\Sii::enviar($RutEnvia, $RutEmisor, $xml_env_rec, $token);
+		// si hubo algún error al enviar al servidor mostrar
+		if ($result_envio===false) {
+		    foreach (\sasco\LibreDTE\Log::readAll() as $error){
+		        $result['error'] = true;
+		    }
+		    $result['message'] = "Error de envío de DTE";		   
+		   	echo json_encode($result);
+		    exit;
+		}
+
+		// Mostrar resultado del envío
+		if ($result_envio->STATUS!='0') {
+		    foreach (\sasco\LibreDTE\Log::readAll() as $error){
+				$result['error'] = true;
+		    }
+		    $result['message'] = "Error de envío de DTE";		   
+		   	echo json_encode($result);
+		    exit;
+		}
+
+
+		$track_id_env_rec = 0;
+		$track_id_env_rec = (int)$result_envio->TRACKID;
+ 
+
+
+
+		// enviar DTE
+		$result_envio = \sasco\LibreDTE\Sii::enviar($RutEnvia, $RutEmisor, $xml_rec_dte, $token);
+
+		// si hubo algún error al enviar al servidor mostrar
+		if ($result_envio===false) {
+		    foreach (\sasco\LibreDTE\Log::readAll() as $error){
+		        $result['error'] = true;
+		    }
+		    $result['message'] = "Error de envío de DTE";		   
+		   	echo json_encode($result);
+		    exit;
+		}
+
+		// Mostrar resultado del envío
+		if ($result_envio->STATUS!='0') {
+		    foreach (\sasco\LibreDTE\Log::readAll() as $error){
+				$result['error'] = true;
+		    }
+		    $result['message'] = "Error de envío de DTE";		   
+		   	echo json_encode($result);
+		    exit;
+		}
+
+
+		$track_id_rec_dte = 0;
+		$track_id_rec_dte = (int)$result_envio->TRACKID;
+
+
+
+		// enviar DTE
+		$result_envio = \sasco\LibreDTE\Sii::enviar($RutEnvia, $RutEmisor, $xml_res_dte, $token);
+
+		// si hubo algún error al enviar al servidor mostrar
+		if ($result_envio===false) {
+		    foreach (\sasco\LibreDTE\Log::readAll() as $error){
+		        $result['error'] = true;
+		    }
+		    $result['message'] = "Error de envío de DTE";		   
+		   	echo json_encode($result);
+		    exit;
+		}
+
+		// Mostrar resultado del envío
+		if ($result_envio->STATUS!='0') {
+		    foreach (\sasco\LibreDTE\Log::readAll() as $error){
+				$result['error'] = true;
+		    }
+		    $result['message'] = "Error de envío de DTE";		   
+		   	echo json_encode($result);
+		    exit;
+		}
+
+
+		$track_id_res_dte = 0;
+		$track_id_res_dte = (int)$result_envio->TRACKID;
+
+
+	    $this->db->where('id', $idcompra);
+		$this->db->update('lectura_dte_email',array('trackid_env_rec' => $track_id_env_rec,
+													'trackid_rec_dte' => $track_id_rec_dte,
+													'trackid_res_dte' => $track_id_res_dte,
+													)); 
+
+
+		$result['success'] = true;
+		$result['message'] = $track_id_env_rec != 0 && $trackid_rec_dte != 0  &&  $trackid_res_dte != 0 ? "DTE enviado correctamente" : "Error en env&iacute;o de DTE";
+		$result['trackid'] = $track_id_env_rec;
+		echo json_encode($result);
+	}	
+
+
 	public function envio_sii(){
 		$idfactura = $this->input->post('idfactura');
 		$this->load->model('facturaelectronica');
@@ -860,9 +1018,15 @@ exit;*/
 	 }	 
 
 
+	 // RecepcionDTE es el que se envía al proveedor (RespuestaEnvioDTE - Aceptación/Rechazo Comercial)????
+
+	 // RECEPCION DTE es el recibo del documento
+	 // RESULTADO DTE se marca el estado seleccionado
+
+
 
 	public function genera_acuse_recibo($idcompra){
-
+		$estado_dte = $this->input->post('estado_dte');
 		$this->load->model('facturaelectronica');
 		$provee = $this->facturaelectronica->get_provee_by_id($idcompra);
 
@@ -889,7 +1053,7 @@ exit;*/
 		}else{
 			$xml_recepcion_dte = $result_recepcion;
 			if(!$error){
-				$result_resultado = $this->resultadodte($xml_content,$RutEmisor_esperado,$RutReceptor_esperado,$archivo_recibido);
+				$result_resultado = $this->resultadodte($xml_content,$RutEmisor_esperado,$RutReceptor_esperado,$archivo_recibido,$estado_dte);
 				if(!$result_resultado){
 					$error = true;
 					$message = "Error en creación de Resultado DTE.  Verifique formato y cargue nuevamente";
@@ -954,6 +1118,7 @@ exit;*/
 							'arch_env_rec' => $nombre_envio_recibo,
 							'arch_rec_dte' => $nombre_recepcion_dte,
 							'arch_res_dte' => $nombre_resultado_dte,
+							'estado_res_dte' => $estado_dte,
 							'procesado' => 'Y',
 							'created_at' => date("Y-m-d H:i:s")
 							);
@@ -1048,7 +1213,7 @@ exit;*/
 	 }
 
 
-	 public function resultadodte($xml_content,$RutEmisor_esperado,$RutReceptor_esperado,$archivo_recibido){
+	 public function resultadodte($xml_content,$RutEmisor_esperado,$RutReceptor_esperado,$archivo_recibido,$estado_dte = 0){
 
 		header('Content-type: text/plain; charset=ISO-8859-1');
 	 	//include $this->ruta_libredte();
@@ -1078,7 +1243,8 @@ exit;*/
 		// procesar cada DTE
 		$i = 1;
 		foreach ($Documentos as $DTE) {
-		    $estado = !$DTE->getEstadoValidacion(['RUTEmisor'=>$RutEmisor_esperado, 'RUTRecep'=>$RutReceptor_esperado]) ? 0 : 2;
+		    //$estado = !$DTE->getEstadoValidacion(['RUTEmisor'=>$RutEmisor_esperado, 'RUTRecep'=>$RutReceptor_esperado]) ? 0 : 2;
+		    $estado = $estado_dte;
 		    $RespuestaEnvio->agregarRespuestaDocumento([
 		        'TipoDTE' => $DTE->getTipo(),
 		        'Folio' => $DTE->getFolio(),

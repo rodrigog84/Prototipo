@@ -61,7 +61,7 @@ class Facturaelectronica extends CI_Model
 	public function ruta_certificado(){
 		$base_path = __DIR__;
 		$base_path = str_replace("\\", "/", $base_path);
-		$path = $base_path . "/../../facturacion_electronica/certificado/certificado.pfx";		
+		$path = $base_path . "/../../facturacion_electronica/certificado/certificado.p12";		
 		return $path;
 	}
 
@@ -439,7 +439,7 @@ class Facturaelectronica extends CI_Model
 
 
 	public function get_provee_by_id($idcompra){
-		$this->db->select('l.id, l.path, l.filename, l.rutemisor, l.dvemisor, l.fecemision, l.procesado, c.razon_social, c.mail, l.fecenvio, l.created_at, l.envios_recibos, l.recepcion_dte, l.resultado_dte, l.arch_env_rec, l.arch_rec_dte, l.arch_res_dte ',false)
+		$this->db->select('l.id, l.path, l.filename, l.rutemisor, l.dvemisor, l.fecemision, l.procesado, c.razon_social, c.mail, l.fecenvio, l.created_at, l.envios_recibos, l.recepcion_dte, l.resultado_dte, l.arch_env_rec, l.arch_rec_dte, l.arch_res_dte, estado_res_dte ',false)
 		  ->from('lectura_dte_email l')
 		  ->join('contribuyentes_autorizados_1 c','l.rutemisor = c.rut','left')
 		  ->where('l.id',$idcompra);
@@ -505,8 +505,10 @@ class Facturaelectronica extends CI_Model
 				$array_rut_emisor = explode("-",$rut_emisor);
 
 
-
-				$array_insert = array('filename' => $dte['filename'],
+				$path = date('Ym').'/'; // ruta guardado
+				$array_insert = array(
+									  'path' => $path,
+									  'filename' => $dte['filename'],
 									  'content' => $dte['content'],
 									  'rutemisor' => $array_rut_emisor[0],
 									  'dvemisor' => $array_rut_emisor[1],
@@ -516,11 +518,11 @@ class Facturaelectronica extends CI_Model
 				$this->db->insert('lectura_dte_email',$array_insert);
 
 
-				$path = date('Ym').'/'; // ruta guardado
-				if(!file_exists('./facturacion_electronica/dte_provee_tmp/')){
-					mkdir('./facturacion_electronica/dte_provee_tmp/',0777,true);
+				
+				if(!file_exists('./facturacion_electronica/dte_provee_tmp/' . $path . '/')){
+					mkdir('./facturacion_electronica/dte_provee_tmp/' . $path . '/',0777,true);
 				}				
-				$f_archivo = fopen('./facturacion_electronica/dte_provee_tmp/'.$dte['filename'],'w');
+				$f_archivo = fopen('./facturacion_electronica/dte_provee_tmp/' . $path . '/' .$dte['filename'],'w');
 				fwrite($f_archivo,$dte['content']);
 				fclose($f_archivo);	
 

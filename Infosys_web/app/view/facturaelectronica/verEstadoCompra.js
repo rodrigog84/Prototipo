@@ -7,7 +7,7 @@ Ext.define('Infosys_web.view.facturaelectronica.verEstadoCompra' ,{
 
     autoShow: true,
     width: 800,
-    height: 300,
+    height: 320,
     initComponent: function() {
         me = this;
         var idcompra = me.idcompra;
@@ -34,6 +34,7 @@ Ext.define('Infosys_web.view.facturaelectronica.verEstadoCompra' ,{
             var email = "";
             var dte = "";
             var acuse_enviorecibos = "";
+            var estado_res_dte = "";
 
         }else{
             var razon_social = obj_datos.razon_social;
@@ -44,6 +45,7 @@ Ext.define('Infosys_web.view.facturaelectronica.verEstadoCompra' ,{
             var url_resultadodte = preurl + 'facturas/ver_dte_proveedor/2/'+idcompra;
             var url = preurl + 'facturas/ver_dte_proveedor/'+idcompra;
             var url_image = preurl_js + 'images/xml-icon.png';
+            var estado_res_dte = obj_datos.estado_res_dte;
             var dte = '<a href="' + url + '" target="_blank"><img src="' + url_image + '" width="16" height="16"></a>';
             //var acuse_enviorecibos = '<a href="' + url_envio_recibos + '" target="_blank"><img src="' + url_image + '" width="16" height="16"></a>';
             var acuse_enviorecibos = obj_datos.arch_env_rec == null ? '<a href="#" ><img src="' + url_image + '" width="16" height="16"></a>' : '<a href="' + url_envio_recibos + '" target="_blank"><img src="' + url_image + '" width="16" height="16"></a>';
@@ -51,7 +53,7 @@ Ext.define('Infosys_web.view.facturaelectronica.verEstadoCompra' ,{
             var acuse_resultadodte = obj_datos.arch_res_dte == null ? '<a href="#" ><img src="' + url_image + '" width="16" height="16"></a>' : '<a href="' + url_resultadodte + '" target="_blank"><img src="' + url_image + '" width="16" height="16"></a>';
 
         }
-
+        console.log(estado_res_dte); 
 
        /* if(trackid == ""){
             var estado_envio_dte = "N/A";
@@ -149,9 +151,10 @@ Ext.define('Infosys_web.view.facturaelectronica.verEstadoCompra' ,{
                         disabled :  obj_datos.arch_res_dte == null ? true : false,
                         labelWidth: 200,
                     
-                    }, /*{
+                    }, {
                         xtype: 'combobox',
                         itemId : 'estado_dte',
+                        name: 'estado_dte',
                         fieldLabel : 'Estado',
                         labelStyle: ' font-weight:bold',
                         emptyText : 'Seleccionar',
@@ -159,19 +162,23 @@ Ext.define('Infosys_web.view.facturaelectronica.verEstadoCompra' ,{
                         store : estado_dte,
                         displayField : 'nombre',
                         valueField : 'value',
+                        width : 500,
                         labelWidth: 200,
+                        allowBlank : false,
+                        value :  estado_res_dte,
+                        disabled : estado_res_dte == null ? false : true
                     
-                    }  */  
-                   /* {
-                        xtype: 'displayfield',
-                        itemId : 'trackid',
-                        fieldLabel : 'Identificador de Env&iacute;o',
+                    }   ,
+                  /*  {
+                        xtype: 'textarea',
+                        itemId : 'observacion',
+                        fieldLabel : 'Motivo',
                         labelStyle: ' font-weight:bold',
                         value : trackid,
                         labelWidth: 200,
                     
                     },                                                    
-                   {
+                  {
                         xtype: 'displayfield',
                         itemId : 'estado_envio',
                         fieldLabel : 'Estado del Env&iacute;o:',
@@ -258,7 +265,7 @@ Ext.define('Infosys_web.view.facturaelectronica.verEstadoCompra' ,{
                                 var form = this.up('form').getForm();
                                 if(form.isValid()){
                                     form.submit({
-                                        url: preurl + 'facturas/envio_sii',
+                                        url: preurl + 'facturas/envio_sii_acuse/' + idcompra,
                                         waitMsg: 'Enviando...',
                                         success: function(fp, o) {
                                             Ext.Msg.alert('Atención', o.result.message);
