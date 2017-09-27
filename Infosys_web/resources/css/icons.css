@@ -176,9 +176,9 @@
 .icon-exel {
     background-image: url(../images/excel.png) !important;
 }
-.icon-pdf {
+/*.icon-pdf {
     background-image: url(../images/icono-pdf3.png) !important;
-}
+}*/
 
 .icon-user-add {
     background-image: url(../images/user_add.gif) !important;
@@ -269,4 +269,8 @@
 
 .icon-download {
     background-image: url(../images/download-icon.png) !important;
+}
+
+.icon-pdf {
+    background-image: url(../images/pdf.png) !important;
 }

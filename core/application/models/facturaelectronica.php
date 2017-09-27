@@ -373,6 +373,55 @@ class Facturaelectronica extends CI_Model
 	 
 
 
+	public function exportFePDFCompra($idcompra){
+
+
+		$dte = $this->facturaelectronica->get_provee_by_id($idcompra);
+		$path_archivo = "./facturacion_electronica/dte_provee_tmp/".$dte->path;
+
+    	$xml_content = file_get_contents($path_archivo.$dte->filename);
+
+
+	 	include $this->ruta_libredte();
+		$EnvioDte = new \sasco\LibreDTE\Sii\EnvioDte();
+		$EnvioDte->loadXML($xml_content);
+		$Caratula = $EnvioDte->getCaratula();
+		$Documentos = $EnvioDte->getDocumentos();
+
+
+		$path_pdf = './facturacion_electronica/pdf_compra/';
+		if(!file_exists($path_pdf.$dte->path)){
+			mkdir($path_pdf.$dte->path,0777,true);
+		}	
+
+		$base_path = __DIR__;
+		$base_path = str_replace("\\", "/", $base_path);
+		$path_pdf = $base_path . "/../../facturacion_electronica/pdf_compra/".$dte->path;				
+
+		// directorio temporal para guardar los PDF
+			// procesar cada DTEs e ir agregándolo al PDF
+		foreach ($Documentos as $DTE) {
+		    if (!$DTE->getDatos())
+		        die('No se pudieron obtener los datos del DTE');
+		    $pdf = new \sasco\LibreDTE\Sii\PDF\Dte(false); // =false hoja carta, =true papel contínuo (false por defecto si no se pasa)
+		    $pdf->setFooterText();
+		    $pdf->setLogo('./facturacion_electronica/images/logo_empresa.png'); // debe ser PNG!
+		    $pdf->setResolucion(['FchResol'=>$Caratula['FchResol'], 'NroResol'=>$Caratula['NroResol']]);
+		    //$pdf->setCedible(true);
+		    $pdf->agregar($DTE->getDatos(), $DTE->getTED());
+
+		    //echo $dir.'/dte_'.$Caratula['RutEmisor'].'_'.$DTE->getID().'.pdf'; exit;
+		    $archivo = 'dte_'.$Caratula['RutEmisor'].'_'.$DTE->getID();
+		    $nombre_archivo = $archivo.".pdf";		    
+		    $pdf->Output($path_pdf.$nombre_archivo, 'FI');
+		}
+
+		//$data_archivo = basename($path_archivo.$dte->filename);
+		//print_r($xml_content); 	 	
+	}
+
+
+
 
 
 	public function carga_contribuyentes($path_base,$archivo){

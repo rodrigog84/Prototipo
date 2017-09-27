@@ -23,6 +23,23 @@ Ext.define('Infosys_web.view.facturaelectronica.DteProveedorPrincipal' ,{
                                 { text: 'Fecha Env&iacute;o',  dataIndex: 'fecenvio', flex: 1 },
                                 { text: 'Fecha Lectura',  dataIndex: 'created_at', flex: 1},
                                 {
+                                    header: "Ver Documento",
+                                    xtype:'actioncolumn',
+                                    width:150,
+                                    align: 'center',
+                                    items: [{
+                                        icon: 'images/pdf.png',  // Use a URL in the icon config
+                                        tooltip: 'Ver Estado Env&iacute;o',
+                                        handler: function(grid, rowIndex, colIndex) {
+                                            var rec = grid.getStore().getAt(rowIndex);
+                                            url = preurl + 'facturas/ver_pdf_compra/'+rec.data.id,
+                                            window.open(url,'_blank');                                            
+                                           // Ext.create('Infosys_web.view.facturaelectronica.verEstadoCompra', {idcompra: rec.data.id});   
+                                        },
+                                    }]     
+                                
+                                    },                                
+                                {
                                     header: "Env&iacute;o SII",
                                     xtype:'actioncolumn',
                                     width:70,

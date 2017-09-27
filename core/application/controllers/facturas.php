@@ -844,6 +844,21 @@ exit;*/
 	 }
 
 
+
+
+	public function ver_pdf_compra($idcompra){
+		$this->load->model('facturaelectronica');
+
+		$this->facturaelectronica->exportFePDFCompra($idcompra);
+
+		
+
+
+		
+	 }
+
+
+
 	public function ver_dte_provee($idcompra){
 		$this->load->model('facturaelectronica');
 		$dte = $this->facturaelectronica->get_provee_by_id($idcompra);
